@@ -5,21 +5,20 @@ using UnityEngine;
 [RequireComponent(typeof(MeshFilter))]
 public class MeshGenerator : MonoBehaviour
 {
-    Mesh mesh;
+    private Mesh mesh;
 
-    Vector3[] vertices;
+    private Vector3[] vertices;
 
-    int[] triangles;
+    private int[] triangles;
 
-    public int xSize = 40;
-    public int zSize = 40;
-    public float xPerlin = 0.3f;
-    public float ExPerlin = 2f;
+    private int xSize = 40;
+    private int zSize = 40;
+    private float xPerlin = 0.3f;
+    private float ExPerlin = 2f;
     private MeshCollider MeshCollider;
 
-
     // Start is called before the first frame update
-    void Start()
+    public void Start()
     {
         MeshCollider = GetComponent<MeshCollider>();
         mesh = new Mesh();
@@ -28,8 +27,10 @@ public class MeshGenerator : MonoBehaviour
         CreateShape();
         UpdateMesh();
     }
-
-    void CreateShape()
+    /// Array of vertices that we want to create
+    /// Assigns each of the vertices a place (Loops through x column)
+    /// Once done with x column, it moves to the next z column
+    private void CreateShape()
     {
         vertices = new Vector3[(xSize + 1) * (zSize + 1)];
 
@@ -37,17 +38,18 @@ public class MeshGenerator : MonoBehaviour
         {
             for (int x = 0; x <= xSize; x++)
             {
-                float y = Mathf.PerlinNoise(x * xPerlin, z * xPerlin) * ExPerlin;
+                float y = Mathf.PerlinNoise(x * xPerlin, z * xPerlin) * ExPerlin;//Perlin noise changes the height of the terrain
                 vertices[i] = new Vector3(x, y, z);
                 i++;
             }
         }
 
+        // Array that hold the connections between each vertice
         triangles = new int[xSize * zSize * 6];
 
         int vert = 0;
         int tris = 0;
-
+        // populates the triangles array with the connections between vertices
         for(int z = 0; z < zSize; z++)
         {
             for(int x = 0; x < xSize; x++)
@@ -71,7 +73,8 @@ public class MeshGenerator : MonoBehaviour
         
     }
 
-    void UpdateMesh()
+    //Shows the lighting of the mesh
+    public void UpdateMesh()
     {
         mesh.Clear();
 
